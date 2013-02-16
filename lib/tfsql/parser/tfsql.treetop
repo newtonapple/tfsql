@@ -1,0 +1,63 @@
+module Tfsql
+  module Parser
+    grammar TFSQL
+      include CaseInsensitiveAlphabet
+
+      rule tfsql
+        statement (osp ';' osp statement)?
+      end
+
+      rule statement
+        select sp fields sp from sp sources
+      end
+
+      rule select
+        s e l e c t 
+      end
+
+      rule fields
+        (all / field) (comma field)*
+      end
+
+      rule field
+        int
+      end
+
+      rule from
+       f r o m
+      end
+
+      rule sources
+        nonempty_string (comma nonempty_string)*
+      end
+
+      rule all
+        '*'
+      end
+
+      rule int
+        [0-9]+
+      end
+
+      rule comma
+        osp ',' osp
+      end
+
+      rule sp
+        [\s]+
+      end
+
+      rule osp
+        [\s]*
+      end
+
+      rule string
+        ('"' ('\"' / !'"' .)* '"') / ("'" ("\\'" / !"'" .)* "'")
+      end
+
+      rule nonempty_string
+        ('"' ('\"' / !'"' .)+ '"') / ("'" ("\\'" / !"'" .)+ "'")
+      end      
+    end
+  end
+end

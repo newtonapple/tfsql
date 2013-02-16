@@ -1,0 +1,109 @@
+module Tfsql
+  module Parser
+    grammar CaseInsensitiveAlphabet
+      rule a
+        [aA]
+      end
+
+      rule b
+        [bB]
+      end
+
+      rule c
+        [cC]
+      end
+
+      rule d
+        [dD]
+      end
+
+      rule e
+        [eE]
+      end
+
+      rule f
+        [fF]
+      end
+
+      rule g
+        [gG]
+      end
+
+      rule h
+        [hH]
+      end
+
+      rule i
+        [iI]
+      end
+
+      rule j
+        [jJ]
+      end
+
+      rule k
+        [kK]
+      end
+
+      rule l
+        [lL]
+      end
+
+      rule m
+        [mM]
+      end
+
+      rule n
+        [nN]
+      end
+
+      rule o
+        [oO]
+      end
+
+      rule p
+        [pP]
+      end
+
+      rule q
+        [qQ]
+      end
+
+      rule r
+        [rR]
+      end
+
+      rule s
+        [sS]
+      end
+
+      rule t
+        [tT]
+      end
+
+      rule u
+        [uU]
+      end
+
+      rule v
+        [vV]
+      end
+
+      rule w
+        [wW]
+      end
+
+      rule x
+        [xX]
+      end
+
+      rule y
+        [yY]
+      end
+
+      rule z
+        [zZ]
+      end
+    end
+  end
+end
