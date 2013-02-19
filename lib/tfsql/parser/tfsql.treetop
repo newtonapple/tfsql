@@ -5,7 +5,7 @@ module Tfsql
 
       rule tfsql
         statement (osp ';'+ osp statement osp ':' osp)* / statement osp ';'*
-      end 
+      end
 
       rule statement
         select_query
@@ -66,7 +66,7 @@ module Tfsql
       rule limit_clause
         sp limit sp num (comma num)*
       end
-      
+
       rule quantifier
         field alias?
       end
@@ -76,7 +76,7 @@ module Tfsql
       end
 
       rule aggregate
-        name osp "(" osp id osp ")" alias?
+        name osp "(" osp field (comma field)* osp ")" alias?
       end
 
       rule alias
