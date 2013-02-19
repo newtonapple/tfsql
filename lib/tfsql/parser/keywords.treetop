@@ -1,0 +1,78 @@
+module Tfsql
+  module Parser
+    grammar Keywords
+      include CaseInsensitiveAlphabet
+      rule as
+        a s
+      end
+
+      rule distinct
+        d i s t i n c t
+      end
+
+      rule select
+        s e l e c t
+      end
+
+      rule from
+        f r o m
+      end
+
+      rule join
+        j o i n
+      end
+
+      rule ljoin
+        l j o i n
+      end
+
+      rule rjoin
+        r j o i n
+      end
+
+      rule ojoin
+        o j o i n
+      end
+
+      rule on
+        o n
+      end
+
+      rule where
+        w h e r e
+      end
+
+      rule and
+        a n d
+      end
+
+      rule or
+        o r
+      end
+
+      rule group_by
+        g r o u p (sp b y)?
+      end
+
+      rule order_by
+        o r d e r (sp b y)?
+      end
+
+      rule having
+        h a v i n g
+      end
+
+      rule asc
+        a s c
+      end
+
+      rule desc
+        d e s c
+      end
+
+      rule limit
+        l i m i t
+      end
+    end
+  end
+end

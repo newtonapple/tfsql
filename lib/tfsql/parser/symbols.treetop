@@ -1,0 +1,33 @@
+module Tfsql
+  module Parser
+    grammar Symbols
+      rule all
+        '*'
+      end
+
+      rule comma
+        osp ',' osp
+      end
+
+      rule sp
+        [\s]+
+      end
+
+      rule osp
+        [\s]*
+      end
+
+      rule string
+        ('"' ('\\"' / !'"' .)* '"') / ("'" ("\\'" / !"'" .)* "'")
+      end
+
+      rule nonempty_string
+        ('"' ('\\"' / !'"' .)+ '"') / ("'" ("\\'" / !"'" .)+ "'")
+      end
+
+      rule regexp
+        '/' ('\\/' / !'/' .)+ '/' [ig]?
+      end
+    end
+  end
+end

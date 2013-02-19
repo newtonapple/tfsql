@@ -1,0 +1,76 @@
+module Tfsql
+  module Parser
+    grammar Expressions
+      include Keywords
+      include Symbols
+
+      rule comparative
+        disjunction / comparison
+      end
+
+      rule disjunction
+        conjunction (osp or osp conjunction)*
+      end
+
+      rule conjunction
+        comparison (osp and osp comparison)*
+      end
+
+      rule comparison
+        (arithmetic osp comparision_operators osp arithmetic) / '(' osp comparative osp ')'
+      end
+
+      rule comparision_operators
+        '=' / '!=' / '<' / '>' / '>=' / '<=' / '~' / '!~'
+      end
+
+      rule arithmetic
+         additive / operand
+      end
+
+      rule additive
+        multitive ( osp [+-] osp multitive )*
+      end
+
+      rule multitive
+        operand ( osp [*/%^] osp operand )*
+      end
+
+      rule operand
+        column / float / int / string / regexp / function / named_field / '(' osp additive osp ')'
+      end
+
+      rule function
+        name osp '(' osp operand osp (',' osp arithmetic)* ')'
+      end
+
+      rule num
+        [0-9]+
+      end
+
+      rule int
+        '-'? [0-9]+
+      end
+
+      rule float
+        '-'? [0-9]+ '.' [0-9]+
+      end
+
+      rule id
+        named_field / column
+      end
+
+      rule named_field
+        name ("." (name/num))?
+      end
+
+      rule name
+        ([a-zA-Z] [a-zA-Z0-9]*) !{ |seq| Tfsql::Parser::KEYWORDS.include?(seq[0].text_value.downcase) }
+      end
+
+      rule column
+        '$' num
+      end
+    end
+  end
+end

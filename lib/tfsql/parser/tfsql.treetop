@@ -1,63 +1,95 @@
 module Tfsql
   module Parser
     grammar TFSQL
-      include CaseInsensitiveAlphabet
+      include Expressions
 
       rule tfsql
-        statement (osp ';' osp statement)?
-      end
+        statement (osp ';'+ osp statement osp ':' osp)* / statement osp ';'*
+      end 
 
       rule statement
-        select sp fields sp from sp sources
+        select_query
       end
 
-      rule select
-        s e l e c t 
+      rule select_query
+        select_clause sources join_clause* where_clause? group_clause? order_clause? limit_clause?
       end
 
-      rule fields
-        (all / field) (comma field)*
+      rule select_clause
+        osp select quanitifiers sp from
+      end
+
+      rule quanitifiers
+        all_followed_by_quantifiers / quantifiers_followed_by_all
+      end
+
+      rule all_followed_by_quantifiers
+        sp all (comma select_quantifier)*
+      end
+
+      rule quantifiers_followed_by_all
+        sp select_quantifier (comma select_quantifier)* (comma all)?
+      end
+
+      rule select_quantifier
+        named_all / quantifier
+      end
+
+      rule named_all
+        name '.' all
+      end
+
+      rule join_clause
+        sp joins (osp '(' osp nonempty_string osp ')')? sp source (sp on osp id osp '=' osp id)?
+      end
+
+      rule joins
+        join / ljoin / rjoin / ojoin
+      end
+
+      rule where_clause
+        sp where sp comparative
+      end
+
+      rule group_clause
+        sp group_by sp quantifier (comma quantifier)*
+      end
+
+      rule order_clause
+        sp order_by sp (column / named_field) order? (comma (column / named_field) order?)*
+      end
+
+      rule order
+        sp (asc / desc)
+      end
+
+      rule limit_clause
+        sp limit sp num (comma num)*
+      end
+      
+      rule quantifier
+        field alias?
       end
 
       rule field
-        int
+        column / nonempty_string / aggregate / named_field
       end
 
-      rule from
-       f r o m
+      rule aggregate
+        name osp "(" osp id osp ")" alias?
+      end
+
+      rule alias
+        sp (as sp)? name
       end
 
       rule sources
-        nonempty_string (comma nonempty_string)*
+        sp source (comma source)*
       end
 
-      rule all
-        '*'
+      rule source
+        nonempty_string alias?
       end
-
-      rule int
-        [0-9]+
-      end
-
-      rule comma
-        osp ',' osp
-      end
-
-      rule sp
-        [\s]+
-      end
-
-      rule osp
-        [\s]*
-      end
-
-      rule string
-        ('"' ('\"' / !'"' .)* '"') / ("'" ("\\'" / !"'" .)* "'")
-      end
-
-      rule nonempty_string
-        ('"' ('\"' / !'"' .)+ '"') / ("'" ("\\'" / !"'" .)+ "'")
-      end      
     end
   end
 end
