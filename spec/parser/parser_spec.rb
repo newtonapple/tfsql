@@ -16,6 +16,7 @@ describe 'TfsqlParser' do
         "SELECT sum ( d.0 ) , aVg(d.1) average, COUNT(d.2) AS count FROM '/path/to/data' GROUP BY d.11 ordeR by d.1, d.2 DESC",
         'select * from "data.txt" where $1 * sin($2) > 5 * $3 and $4 ~ /orbit/',
         'select * from "data.txt" where $1 * sin($2) > 5 * $3 and $4 ~ /ad|bc/ or $4 !~/hello/ group by d6 order by $1, $2 desc limit 5, 500',
+        'select * from "data.txt" where !($1 > $2 or $2 > $3) group by d6 order by $1, $2 desc limit 5, 500',
         'select * from "datA.txt" as A JOIN("\n") "datB.txt" as B ON A.1 = B.1'
     ]
 

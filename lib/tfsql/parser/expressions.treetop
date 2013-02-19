@@ -17,7 +17,7 @@ module Tfsql
       end
 
       rule comparison
-        (arithmetic osp comparision_operators osp arithmetic) / '(' osp comparative osp ')'
+        (arithmetic osp comparision_operators osp arithmetic) / '!'? '(' osp comparative osp ')'
       end
 
       rule comparision_operators
