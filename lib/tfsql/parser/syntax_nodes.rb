@@ -1,24 +1,36 @@
-module Tfsql::Parser
-  class Node < Treetop::Runtime::SyntaxNode
-    def to_code(generator)
-      generator.to_code(self)
-    end
-  end
-
-  class ExpressionNode < Node
-    def left_expression
+module Tfsql
+  module Parser
+    class Node < Treetop::Runtime::SyntaxNode
+      def to_code(generator)
+        generator.to_code(self)
+      end
     end
 
-    def right_expression
-      
+    # labels: first, rest(element)
+    class PrefixListNode < Treetop::Runtime::SyntaxNode
+      def all
+        @all ||= [first] + tail
+      end
+
+      def tail
+        rest.elements.map{|e| e.element}
+      end
+
+      def text_values
+        all.map { |e| e.text_value }
+      end
+
+      def size
+        all.size
+      end
     end
 
-    def operator
-      
-    end
-
-    def to_code(generator)
-      
+    # labels: first, rest(element), last(element)?
+    class ListNode < PrefixListNode
+      def tail
+        elements = rest.elements.map{|e| e.element}
+        elements << last.element unless last.empty?
+      end
     end
   end
 end

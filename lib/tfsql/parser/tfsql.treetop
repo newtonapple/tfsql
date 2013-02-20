@@ -3,8 +3,8 @@ module Tfsql
     grammar TFSQL
       include Expressions
 
-      rule tfsql
-        statement (osp ';'+ osp statement osp ':' osp)* / statement osp ';'*
+      rule statements
+        first:statement rest:(osp ';'+ osp element:statement)* osp ';'? osp <Tfsql::Parser::PrefixListNode>
       end
 
       rule statement
@@ -12,23 +12,29 @@ module Tfsql
       end
 
       rule select_query
-        select_clause sources join_clause* where_clause? group_clause? order_clause? limit_clause?
+        select:select_clause
+        sources:sources
+        joins:join_clause*
+        where:where_clause?
+        group:group_clause?
+        order:order_clause?
+        limit:limit_clause?
       end
 
       rule select_clause
-        osp select quanitifiers sp from
+        osp select quantifiers sp from
       end
 
-      rule quanitifiers
+      rule quantifiers
         all_followed_by_quantifiers / quantifiers_followed_by_all
       end
 
       rule all_followed_by_quantifiers
-        sp all (comma select_quantifier)*
+        sp first:all rest:(comma element:select_quantifier)* <Tfsql::Parser::PrefixListNode>
       end
 
       rule quantifiers_followed_by_all
-        sp select_quantifier (comma select_quantifier)* (comma all)?
+        sp first:select_quantifier rest:(comma element:select_quantifier)* last:(comma element:all)? <Tfsql::Parser::ListNode>
       end
 
       rule select_quantifier
@@ -40,7 +46,7 @@ module Tfsql
       end
 
       rule join_clause
-        sp joins (osp '(' osp nonempty_string osp ')')? sp source (sp on osp id osp '=' osp id)?
+        sp type:joins (osp '(' osp delimiter:nonempty_string osp ')')? sp source (sp on osp column_name_1:id osp '=' osp column_name_2:id)?
       end
 
       rule joins
@@ -52,11 +58,11 @@ module Tfsql
       end
 
       rule group_clause
-        sp group_by sp quantifier (comma quantifier)*
+        sp group_by sp first:quantifier rest:(comma element:quantifier)* <Tfsql::Parser::PrefixListNode>
       end
 
       rule order_clause
-        sp order_by sp (column / named_field) order? (comma (column / named_field) order?)*
+        sp order_by sp first:((column / named_field) order:order?) rest:(comma element:((column / named_field) order:order?))* <Tfsql::Parser::PrefixListNode>
       end
 
       rule order
@@ -64,7 +70,7 @@ module Tfsql
       end
 
       rule limit_clause
-        sp limit sp num (comma num)*
+        sp limit sp first:num rest:(comma element:num)* <Tfsql::Parser::PrefixListNode>
       end
 
       rule quantifier
@@ -76,7 +82,7 @@ module Tfsql
       end
 
       rule aggregate
-        name osp "(" osp field (comma field)* osp ")" alias?
+        name osp "(" osp first:field rest:(comma element:field)* osp ")" alias:alias? <Tfsql::Parser::PrefixListNode>
       end
 
       rule alias
@@ -84,7 +90,7 @@ module Tfsql
       end
 
       rule sources
-        sp source (comma source)*
+        sp first:source rest:(comma element:source)* <Tfsql::Parser::PrefixListNode>
       end
 
       rule source
