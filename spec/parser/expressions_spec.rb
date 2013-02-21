@@ -11,7 +11,7 @@ describe Tfsql::Parser::ExpressionsParser do
     @parser.parse code
   end
   describe 'valid where expression' do
-    VALID_QUERIES = [
+    valid_queries = [
       '1 + 2 = 3',
       '(1+2) = 3 * 0 + 3', 
       'd4 * d5 > (d1 * $2) + d3',
@@ -22,7 +22,7 @@ describe Tfsql::Parser::ExpressionsParser do
       '$6 ~ /foo/ and ($1 + $2) * 2> 5 and (($1 + $2) * 7 > $3 or d.name != "stuff" or $3 < $5 + 2 / log($6, 2))'
     ]
 
-    VALID_QUERIES.each do |query|
+    valid_queries.each do |query|
       it("parses #{query}") { parse(query).wont_be_nil }
     end
   end

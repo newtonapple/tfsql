@@ -8,8 +8,18 @@ module Tfsql
 
     # labels: first, rest(element)
     class PrefixListNode < Treetop::Runtime::SyntaxNode
+      include Enumerable
+
+      def each
+        all.each {|e| yield e}
+      end
+
       def all
         @all ||= [first] + tail
+      end
+
+      def [](position)
+        all[position]
       end
 
       def tail
