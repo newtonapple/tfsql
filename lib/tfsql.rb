@@ -1,7 +1,7 @@
 require "tfsql/version"
 module Tfsql
   module Parser
-    KEYWORDS = ['as', 'select', 'from', 'join', 'ljoin', 'rjoin', 'ojoin', 'where', 'group', 'having', 'order', 'limit', 'by', 'asc', 'desc']
+    KEYWORDS = ['as', 'select', 'from', 'with', 'join', 'ljoin', 'rjoin', 'ojoin', 'on', 'where', 'group', 'having', 'order', 'limit', 'by', 'asc', 'desc']
   end
   def self.load_parser
     require 'treetop'

@@ -65,7 +65,7 @@ module Tfsql
       end
 
       rule name
-        ([a-zA-Z] [a-zA-Z0-9]*) !{ |seq| Tfsql::Parser::KEYWORDS.include?(seq[0].text_value.downcase) }
+        ([a-zA-Z] [a-zA-Z0-9_]*) !{ |seq| Tfsql::Parser::KEYWORDS.include?(seq[0].text_value.downcase) }
       end
 
       rule column

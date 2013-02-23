@@ -18,15 +18,15 @@ module Tfsql
       end
 
       rule string
-        ('"' string:('\\"' / !'"' .)* '"') / ("'" ("\\'" / !"'" .)* "'")
+        ('"' string:('\\"' / !'"' .)* '"') / ("'" string:("\\'" / !"'" .)* "'")
       end
 
       rule nonempty_string
-        ('"' string:('\\"' / !'"' .)+ '"') / ("'" ("\\'" / !"'" .)+ "'")
+        ('"' string:('\\"' / !'"' .)+ '"') / ("'" string:("\\'" / !"'" .)+ "'")
       end
 
       rule regexp
-        '/' regexp:('\\/' / !'/' .)+ '/' [ig]?
+        '/' regexp:('\\/' / !'/' .)+ '/' modifers:('i'? 'g'? / 'g'? 'i'?)
       end
     end
   end

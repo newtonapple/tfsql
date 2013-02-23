@@ -46,7 +46,7 @@ module Tfsql
       end
 
       rule join_clause
-        sp type:joins delimiter:(osp '(' osp nonempty_string osp ')')? sp source columns:(sp on osp left:id osp '=' osp right:id)?
+        sp type:joins sp source columns:(sp on osp left:id osp '=' osp right:id)?
       end
 
       rule joins
@@ -94,7 +94,15 @@ module Tfsql
       end
 
       rule source
-        path:nonempty_string alias:alias?
+        source_path:nonempty_string source_delimiter:(':' nonempty_string)? source_alias:alias? source_schema:schema? <Tfsql::Parser::SourceNode>
+      end
+
+      rule schema
+        sp with osp '(' osp first:schema_column rest:(osp ',' osp element:schema_column)* ')' <Tfsql::Parser::PrefixListNode>
+      end
+
+      rule schema_column
+        column_name:(name / num) column_type:(':' type:('numeric' / 'string'))? <Tfsql::Parser::SchemaColumnNode>
       end
     end
   end

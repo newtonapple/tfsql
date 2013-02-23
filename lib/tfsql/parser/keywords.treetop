@@ -18,6 +18,10 @@ module Tfsql
         f r o m
       end
 
+      rule with
+        w i t h
+      end
+
       rule join
         j o i n
       end
