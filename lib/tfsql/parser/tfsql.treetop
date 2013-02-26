@@ -46,7 +46,7 @@ module Tfsql
       end
 
       rule join_clause
-        sp type:joins sp source columns:(sp on osp left:id osp '=' osp right:id)?
+        sp join_type:joins sp source join_on:(sp on osp left:id osp '=' osp right:id)? <Tfsql::Parser::JoinNode>
       end
 
       rule joins

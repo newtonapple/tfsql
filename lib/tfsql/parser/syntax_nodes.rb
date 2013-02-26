@@ -30,11 +30,46 @@ module Tfsql
     end
 
 
+
     # labels: first, rest(element), last(element)?
     class ListNode < PrefixListNode
       def tail
         elements = rest.elements.map{|e| e.element}
         elements << last.element unless last.empty?
+      end
+    end
+
+
+    class NamedFieldNode < Treetop::Runtime::SyntaxNode
+      def table
+        ns.text_value
+      end
+
+      def field
+        Integer member.field.text_value
+      rescue ArgumentError
+        member.field.text_value
+      end
+    end
+
+
+    class ColumnNode < Treetop::Runtime::SyntaxNode
+      def table
+        nil
+      end
+
+      def field
+        num.text_value.to_i
+      end
+    end
+
+    class JoinNode < Treetop::Runtime::SyntaxNode
+      def type
+        join_type.text_value
+      end
+
+      def on
+        join_on.empty? ? nil : [join_on.left, join_on.right]
       end
     end
 

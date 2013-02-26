@@ -1,3 +1,4 @@
+require 'debugger'
 require 'spec_helper'
 Tfsql.load_parser
 
@@ -82,40 +83,43 @@ describe 'TfsqlParser' do
         joins = parse('select * from "a.txt" a join "b.txt"').first.joins
         joins.elements.size.must_equal 1
         join = joins.elements[0]
-        join.type.text_value.must_equal 'join'
+        join.type.must_equal 'join'
         join.source.path.must_equal "b.txt"
         join.source.alias.must_be_nil
+        join.on.must_be_nil
       end
 
       it 'extracts single join with "on" statement' do
-        joins = parse('select * from "a.txt" a join "b.txt":"\t" b on a.1 = b.1').first.joins
+        joins = parse('select * from "a.txt" join "b.txt":"\t" b on $2 = b.1').first.joins
         joins.elements.size.must_equal 1
         join = joins.elements[0]
-        join.type.text_value.must_equal 'join'
+        join.type.must_equal 'join'
         join.source.delimiter.must_equal '\t'
         join.source.path.must_equal "b.txt"
         join.source.alias.must_equal "b"
-        join.columns.left.text_value.must_equal 'a.1'
-        join.columns.right.text_value.must_equal 'b.1'
+        join.on[0].table.must_be_nil
+        join.on[0].field.must_equal 2
+        join.on[1].table.must_equal 'b'
+        join.on[1].field.must_equal 1
       end
 
       it 'extracts multiple joins' do
         joins = parse('select * from "a.txt" a join "b.txt":"\t" b on a.1 = b.1 ljoin "c.txt" on b.1 = c.1').first.joins
         joins.elements.size.must_equal 2
         join = joins.elements[0]
-        join.type.text_value.must_equal 'join'
+        join.type.must_equal 'join'
         join.source.delimiter.must_equal '\t'
         join.source.path.must_equal "b.txt"
         join.source.alias.must_equal "b"
-        join.columns.left.text_value.must_equal 'a.1'
-        join.columns.right.text_value.must_equal 'b.1'
+        join.on[0].text_value.must_equal 'a.1'
+        join.on[1].text_value.must_equal 'b.1'
         join = joins.elements[1]
-        join.type.text_value.must_equal 'ljoin'
+        join.type.must_equal 'ljoin'
         join.source.path.must_equal "c.txt"
         join.source.alias.must_be_nil
         join.source.delimiter.must_equal '\t'
-        join.columns.left.text_value.must_equal 'b.1'
-        join.columns.right.text_value.must_equal 'c.1'
+        join.on[0].text_value.must_equal 'b.1'
+        join.on[1].text_value.must_equal 'c.1'
       end
     end
   end

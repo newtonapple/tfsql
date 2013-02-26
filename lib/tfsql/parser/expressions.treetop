@@ -61,7 +61,7 @@ module Tfsql
       end
 
       rule named_field
-        name ("." (name/num))?
+        ns:name member:("." field:(name / num))? <Tfsql::Parser::NamedFieldNode>
       end
 
       rule name
@@ -69,7 +69,7 @@ module Tfsql
       end
 
       rule column
-        '$' num
+        '$' num <Tfsql::Parser::ColumnNode>
       end
     end
   end
