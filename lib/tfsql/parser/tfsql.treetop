@@ -54,7 +54,7 @@ module Tfsql
       end
 
       rule where_clause
-        sp where sp comparative
+        sp where sp disjunction
       end
 
       rule group_clause
@@ -74,15 +74,11 @@ module Tfsql
       end
 
       rule quantifier
-        field alias?
+        field alias:alias?
       end
 
       rule field
-        column / nonempty_string / aggregate / named_field
-      end
-
-      rule aggregate
-        name osp "(" osp first:field rest:(comma element:field)* osp ")" alias:alias? <Tfsql::Parser::PrefixListNode>
+        column / function / named_field
       end
 
       rule alias

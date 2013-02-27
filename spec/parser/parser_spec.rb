@@ -1,4 +1,3 @@
-require 'debugger'
 require 'spec_helper'
 Tfsql.load_parser
 
@@ -34,6 +33,9 @@ describe 'TfsqlParser' do
     end
   end
 
+
+
+
   describe 'Select Query Syntax Tree' do
     describe "select quantifiers extraction" do
       it 'extracts select quantifiers' do
@@ -47,6 +49,7 @@ describe 'TfsqlParser' do
         select.quantifiers.text_values.must_equal ['$2', 'C.*', '$5', '*']
       end
     end
+
 
     describe 'sources extraction' do
       it 'extracts single source' do
@@ -72,6 +75,7 @@ describe 'TfsqlParser' do
         sources[1].alias.must_equal 'log'
       end
     end
+
 
     describe 'joins extraction' do
       it 'extracts no joins' do
@@ -121,6 +125,63 @@ describe 'TfsqlParser' do
         join.on[0].text_value.must_equal 'b.1'
         join.on[1].text_value.must_equal 'c.1'
       end
-    end
-  end
+    end # joins extraction
+
+
+    describe 'where extraction' do
+      it 'extracts no where clause' do
+        where = parse("select * from 'textfile.txt'").first.where
+        where.must_be_empty 
+      end
+
+      it 'extracts boolean comparison where condition' do
+        disjunction = parse("select * from 'a.txt' as a where a.1 > 100").first.where.disjunction
+        disjunction.size.must_equal 1
+        conjunction = disjunction.first
+        conjunction.first.comparisons[0].text_value.must_equal 'a.1'
+        conjunction.first.comparisons[1].text_value.must_equal '100'
+        conjunction.first.operator.must_equal '>'
+      end
+
+      it 'extracts regular expression comparison where condition' do
+        disjunction = parse("select * from 'a.txt' as a where a.1 ~ /san francisco/").first.where.disjunction
+        disjunction.size.must_equal 1
+        conjunction = disjunction.first
+        conjunction.first.comparisons[0].text_value.must_equal 'a.1'
+        conjunction.first.comparisons[1].text_value.must_equal '/san francisco/'
+        conjunction.first.operator.must_equal '~'
+      end
+
+      it 'extracts negated comparison where condition' do
+        disjunction = parse("select * from 'a.txt' as a where !(a.1 ~ /san francisco/)").first.where.disjunction
+        disjunction.size.must_equal 1
+        conjunction = disjunction.first
+        conjunction.first.operator.must_equal '!'
+        conjunction.first.comparisons[0].first.first.comparisons[0].text_value.must_equal 'a.1'
+        conjunction.first.comparisons[0].first.first.comparisons[1].text_value.must_equal '/san francisco/'
+        conjunction.first.comparisons[0].first.first.operator.must_equal '~'
+      end
+    end # where extraction
+
+
+    describe 'group by extraction' do
+      it 'extracts no group by' do
+        group = parse('select * from "a.txt"').first.group
+        group.must_be_empty
+      end
+
+      it 'extracts group by with single id field' do
+        group = parse('select * from "a.txt" group by $1').first.group
+        group.size.must_equal 1
+        group[0].field.table.must_be_nil
+        group[0].field.field.must_equal 1
+        group = parse('select * from "a.txt" ATXT group by a.1 as aName').first.group
+        group.size.must_equal 1
+        group[0].field.table.must_equal 'a'
+        group[0].field.field.must_equal 1
+        group[0].alias.name.text_value.must_equal 'aName'
+      end
+    end # group by extraction
+
+  end # Select Query Syntax Tree
 end

@@ -30,7 +30,6 @@ module Tfsql
     end
 
 
-
     # labels: first, rest(element), last(element)?
     class ListNode < PrefixListNode
       def tail
@@ -39,6 +38,24 @@ module Tfsql
       end
     end
 
+
+    class FunctionNode < PrefixListNode
+      def name
+        function_name.text_value
+      end
+
+      alias :arguments :all
+    end
+
+    class ComparisonNode < Treetop::Runtime::SyntaxNode
+      def comparisons
+        respond_to?(:left) ? [left, right] : [disjunction]
+      end
+
+      def operator
+        comparison_operator.text_value
+      end
+    end
 
     class NamedFieldNode < Treetop::Runtime::SyntaxNode
       def table

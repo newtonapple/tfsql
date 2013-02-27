@@ -4,28 +4,36 @@ module Tfsql
       include Keywords
       include Symbols
 
-      rule comparative
-        disjunction / comparison
-      end
-
       rule disjunction
-        conjunction (osp or osp conjunction)*
+        first:conjunction rest:(osp or osp element:conjunction)* <Tfsql::Parser::PrefixListNode>
       end
 
       rule conjunction
-        comparison (osp and osp comparison)*
+        first:comparison rest:(osp and osp element:comparison)* <Tfsql::Parser::PrefixListNode>
       end
 
       rule comparison
-        (arithmetic osp comparision_operators osp arithmetic) / '!'? '(' osp comparative osp ')'
+        arithmetic_comparison / regexp_comparison / grouped_comparison
       end
 
-      rule comparision_operators
-        '=' / '!=' / '<' / '>' / '>=' / '<=' / '~' / '!~'
+      rule regexp_comparison
+        left:(named_field / column / function) osp comparison_operator:regexp_operators osp right:regexp <Tfsql::Parser::ComparisonNode>
       end
 
-      rule arithmetic
-         additive / operand
+      rule arithmetic_comparison
+        left:additive osp comparison_operator:comparison_operators osp right:additive <Tfsql::Parser::ComparisonNode>
+      end
+
+      rule grouped_comparison
+        comparison_operator:'!'? '(' osp disjunction osp ')' <Tfsql::Parser::ComparisonNode>
+      end
+
+      rule comparison_operators
+        '=' / '!=' / '<' / '>' / '>=' / '<='
+      end
+
+      rule regexp_operators
+        '~' / '!~'
       end
 
       rule additive
@@ -41,7 +49,7 @@ module Tfsql
       end
 
       rule function
-        name osp '(' osp operand osp (',' osp arithmetic)* ')'
+        function_name:name osp '(' osp first:operand osp rest:(',' osp element:additive)* ')' <Tfsql::Parser::FunctionNode>
       end
 
       rule num
